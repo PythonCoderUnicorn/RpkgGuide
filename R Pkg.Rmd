@@ -1,0 +1,64 @@
+---
+title: "R pkg Ninja"
+subtitle: "<br/>with R-Ladies Boulder"
+author: "🌈 Zane Dax (She/They) 🌈"
+institute: "@StarTrek_Lt"
+date: "`r Sys.Date()`"
+
+output:
+  xaringan::moon_reader:
+    css: [default, rladies, rladies-fonts]
+    lib_dir: libs
+    nature:
+      slideNumberFormat: "%current%"
+      highlightStyle: github
+      highlightLines: true
+      ratio: 16:9
+      countIncrementalSlides: true
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(
+  fig.width=9, fig.height=3.5, fig.retina=3,
+  out.width = "100%",
+  cache = FALSE,
+  echo = TRUE,
+  message = FALSE, 
+  warning = FALSE,
+  hiline = TRUE
+)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
