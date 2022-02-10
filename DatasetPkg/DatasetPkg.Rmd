@@ -39,178 +39,308 @@ background-image: url("slides_files/RLadies\ bg.png")
 
 
 ---
-# R pkg instructions
+# R data pkg instructions 📄
 
-## Option 1 - GitHub 1st (recommended)
+## GitHub 1st (recommended)
 
+- GitHub > create new repository > NAME, Public and README
 - copy the HTTPS url link
 - RStudio File > New Project > Version Control 
 - paste in the url
-- in the console: `library(devtools)`
-- in the console: `create_package(path=".")`
-
-
-## Option 2 - GitHub 2nd
-
-- build pkg BEFORE **GitHub**
-- top right tab in RStudio **Project (none)** > New Project
-- New Directory > R Package > give package a name
-
-
-
-
-
-
-
----
-# Initial start - 1.1
-
-![img1](img/img1.png)
-In the console you type in `library(devtools)` and `create_package(path='.')`
-
-loading the `library(here)` is a very good idea as well.
-
-The path is set to `'.'` to avoid building a package inside a folder.
-
-If you select either "no" options, nothing will happen.
-
-
----
-# Initial start - 1.2
-![img2](img/img2.1.png)
-
-
-
----
-# Step 2
-
-RStudio opens a new window session, this is where you need to
-type in the console:
+- in the console: 
 
 ```
 library(devtools)
-library(testthat)
+library(roxygen2)
 library(usethis)
+
+# install.packages("here")
+here::here()    # for pkg management
+
+create_package(path=".") 
+# this creates a pkg inside a repo instead of a folder
 ```
 
-After loading the libraries do an initial check
+You want to override existing package, a new RStudio session will open 
+and will have the Build tab on top right panel.
+
+**Credit:**
+This content is mostly from **Allison Hill** and the **r4edu** [Book](https://rstudio4edu.github.io/rstudio4edu-book/), chapter 12. 
+
+
+
+
+
+---
+# Necessary files 🔺
+
+In the Files folder you should see
+
+- `.gitignore`
+- `.Rbuildignore`
+- `DESCRIPTION`
+- `NAMESPACE`
+- `.RData`
+- `.Rhistory`
+- `<your-pkg-name>.Rproj`
+- `R/`
+
+commit and push to GitHub. 
+
+
+---
+# Add data 📔 📶
+
+Any `.R` file or files used for pre-processing goes into `data-raw/`
+
+```
+usethis::use_data_raw()  # This creates a data-raw folder.
+```
+
+add content in the `DATASET.R` file, 
+add whatever, *it does not impact the use of your package*.
+
+You could have inside the DATASET.R file
+
+| Idea   1                     | Idea 2   |
+|------------------------------|----------|
+| starwars =  dplyr::starwars  | library(tidytuesdayR) |
+| starwars = starwars          | tuesdata = tidytuesdayR::tt_load('2021-12-14') |
+|                              | studio_album_tracks = tuesdata$studio_album_tracks |
+| usethis::use_data(starwars, overwrite = TRUE) | usethis::use_data(studio_album_tracks, overwrite = TRUE) |
+
+1. load `library()` / libraries
+2. **read in the data** & data clean (if you want)
+3. `usethis::use_data()`
+4. hit the **source** button, this creates a data/ folder
+
+
+
+
+---
+# Build & Load it  🏗️
+
+In RStudio: Build tab > More > Load All. This loads all of your .R and data files.
+
+
+Now in the console, type the `YOUR_PACKAGE`::`SPECIFIC_DATASET`
+
+
+this will load the dataset.
+
+<img height='250' src='img/img1.png'>
+
+This is my RLadiesData package and the datasets I have.
+
+
+
+---
+# Check it ✅
+
+You want to do some checks on the pkg, in the console
+
 `devtools::check()`
 
-You will likely see a **warning** (in green) about the LICENSE of your package. If you wish to deal with this now instead of later
-run: `use_mit_license()` in the console.
-
-
-If your package will be using the magrittr %>%, you can load it now using `use_pipe()` and then `document()`. The `use_pipe()` creates a .R file inside the R folder and `document()` creates a NAMESPACE object.
-
+commit & push to GitHub
 
 
 
 ---
-# Step 3 - Functions!
+# Document the dataset(s) 📄
 
-Now is the time to start building functions for your package.
-The essential code you need for each function is: 
+In console: `usethis::use_r("DATASET_NAME")` . Repeat this for each dataset you 
+have. And in the new .R file, add **roxygen** comments, I use `devtools::document()`.
 
-- `use_r("NAME_OF_YOUR_FUNCTION")` . This opens up a .R file
+There are **three main ways** to run roxygen:
 
-Some tutorials add **Roxygen** code later into this .R file, I like to do it at the same time as creating your function. Roxygen code starts with # + back tick. This example is `use_r("add")`. This slide shows only bare minimum for roxygen code, for full details read [roxygen documentation](https://roxygen2.r-lib.org/articles/roxygen2.html)
+- *`roxygen2::roxygenise()`* | *`Ctrl + Shift + D`* | *`devtools::document()`*.  
 
-### inside the .R file
+
+For further details, click [Roxygen docs](https://cran.r-project.org/web/packages/roxygen2/vignettes/roxygen2.html)
+
+Roxygen comments look like this:
 ```
-#'@title Add two vectors
-#'@description
-#'This function ...
-.
-.
-.
-add <- function(x, y){
-  x + y
-}
+#' RLadiesData
+#' The World Happiness Report (2016) ranks 156 countries by their happiness levels.
+#' @format A tibble with 157 rows and 14 variables:
+#' \describe{
+#'   \item{Country}{chr The name of the Country}
+         .
+         .
+         .
+#' }
+#' @source \url{RLadies Freiburg}
+"Happiness"
+``` 
+
+
+
+
+
+---
+# Help file ❓️📄
+
+To get the help file to your dataset in your package,
+in the console you type `?DATASET_NAME` to get the file to open in the **Help** tab.
+
+<img height='400', align='right', src='img/img3.png'>
+
+
+#### Test this out for each of your datasets
+
+For this example I typed `?Happiness`
+
+
+
+
+
+---
+# Document the pkg 📄
+
+This is when you open the DESCRIPTION file, and edit the content with your information.
+
+You should see 
+```
+Package: NAME OF YOUR PACKAGE
+Title: NAME OF YOUR PACKAGE
+Version: 0.0.1
+Authors@R: 
+    person("FIRST", "LAST", , "FAKE@email.com", role = c("aut", "cre"),
+           comment = c(ORCID = "YOUR-ORCID-ID"))
+Description: What the package does (one paragraph).
+License: CC BY 4.0
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.2
+Depends: 
+    R (>= 2.10)
+LazyData: true
+URL: https://YOUR_GITHUB-NAME.github.io/PACKAGE_NAME
 ```
 
-Then run `document()` and after you do this for each function, run 
-`load_all()`
 
 
 
 ---
-# Step 4 - Call your function
+# Check it ✅ ✅
 
-In the console, type `add(3,5)`. You should see it suggested with the name
-of your package, for this tutorial I named my package "pkgDemo".
+You want to do some checks on the pkg, in the console
 
-![img3](img/img3.png)
+`usethis::use_package_doc()`
+
+`devtools::document()`
+
+`devtools::check()`
+
+This is when you want to use a license, an option is:
+`usethis::use_agpl_license()` but there are many others.
+
+commit & push to GitHub
+
+
+---
+# Install it ⬇️
+
+This is when you get to install your own package!
+
+- `devtools::install("path-to-github-pkg")` 
+- `remotes::install_github()`
+- ex: `remotes::install_github("PythonCoderUnicorn/RLadiesData")`
+
+Then load **your package**
+
+- `library("your-pkg-name")` 
+- `pkgName::dataset1`
+
+
+<img height='250', align='right', src='img/img5.png'>
 
 
 
 ---
-# Step 5 - Test it/ Test that
+# GitHub Pages 📄💻
 
-In the console type `use_testthat()` and 
-then `use_test('add')` etc. for all of your functions you made.
-This creates a unit test for the function. Since we dealt with the LICENSE warning earlier we see all 3 green checkmarks.
+Every respectable R package has a website for the package, you can make this
+happen with 1 function call! 
 
-The test will create a Test folder and will open a test file. This is where you do all your **unit testing** for you function(s) against all use cases. After you do unit tests, run `check()` in the console.
-
-![img5](img/img5.png)
+In the console, type `usethis::use_pkgdown_github_pages()`
 
 
+**commit & push to GitHub**. Then go to **Actions** tab, where you will see
+`pkgdown` do the function calls to make your pkg website that includes your
+vignettes. You need to click on top / first workflow to get it started, at the end you will have a active **url link** which is automatically posted in your README.
 
----
-# Step 6 - Vignettes & Description
+<img height='280' src='img/img4.png'>
 
-You can have vignettes on how to use your functions in your package, by running the code `install(build_vignettes = TRUE)` in the
-console. This step is when you would want to edit the DESCRIPTION file, which is the basic information about your package. This is from my mathR pkg description file.
 
-![img5.5](img/img5.5.png)
+
+
 
 
 
 ---
-# Step 7 - Install your package!
+# Pkg Delivery 📦 🚚
 
-After you commit and pushed your code along the way, 
-you now can install your very own package! In the RStudio right side, Packages tab > search for your package
-and it's not there, not yet but soon!
+This is when you edit your README file and post the very useful code of how to install 
+your package.
 
-In the console: 
-`devtools::install_github("your_GITHUB_NAME/your_PKG_NAME")`
+To have code that a person can copy & paste, use 3 ` (back ticks) before and after the 
+code.
 
-![img6](img/img6.png)
+### Install package
 
+'''
+```
+remotes::install_github("YOUR-GITHUB/your_datapkg")
+```
+'''
 
----
-# Step 8 - GitHub pages
+Then do the same for the `library()` so they can load your package.
 
-This step is all about automating your GitHub pages webpage and having it posted in the README file. 
+### A good documented README file matters! It's free marketing and advertising of your package
 
-In the console: `usethis::use_pkgdown_github_pages()` then commit and push your changes to your GitHub. Then go to the **Actions** section.
+Tell the world *why* they should use your package. Show use cases and post 
+images of plots if your package uses plotting. 
 
-![img7](img/img7.png)
-
-
----
-
-![img8](img/img8.png)
-
-
----
-# GitHub pages
-
-After `pkgdown` does the magic and finished it work, you should
-see a active link to your package documentation.
-
-![img9](img/img9.png)
 
 
 
 ---
-# Congrats !!
+# Congrats !! 🥳 🍹
 
-You just made a R package !
+## YOU just made a dataset package!! 
 
-Now the fun is to go back and make changes to files, add more
-functions and descriptions of functions.
+
+<img height='350'  align='right' src='img/img6.png' alt='search GitHub for your package'>
+
+Search GitHub for your package ->
+
+***Now what?***
+
+- Tell the world ! 
+- add this to resume or CV
+- make a hex logo for your package
+- improve your pkg
+
+
+
+---
+class: inverse, middle, center
+
+# The End
+
+
+
+---
+# Thank you 🌷
+
+- **Thank you** RLadies for this opportunity 🍁
+
+Hope you enjoyed this and practice.
+
+
+
+![pkgdown](img/hex-pkgdown.png)
 
 
 
